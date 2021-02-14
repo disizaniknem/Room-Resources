@@ -1,11 +1,11 @@
 package com.disizaniknem.roomresources
 
 import androidx.room.*
-import com.disizaniknem.roomresources.entities.Director
-import com.disizaniknem.roomresources.entities.School
-import com.disizaniknem.roomresources.entities.Student
+import com.disizaniknem.roomresources.entities.*
 import com.disizaniknem.roomresources.entities.relations.SchoolAndDirector
 import com.disizaniknem.roomresources.entities.relations.SchoolWithStudents
+import com.disizaniknem.roomresources.entities.relations.StudentSubjectCrossRef
+import com.disizaniknem.roomresources.entities.relations.StudentWithSubjects
 
 @Dao
 interface SchoolDao {
@@ -18,6 +18,20 @@ interface SchoolDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertStudent(student: Student)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSubject(subject: Subject)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertStudentSubjectCrossRef(crossRef: StudentSubjectCrossRef)
+
+    @Transaction
+    @Query("SELECT * FROM subject WHERE subjectName = :subjectName")
+    suspend fun getStudentsOfSubject(subjectName: String) : List<SubjectWithStudents>
+
+    @Transaction
+    @Query("SELECT * FROM student WHERE studentName = :studentName")
+    suspend fun getSubjectsOfStudent(studentName: String) : List<StudentWithSubjects>
 
     @Transaction
     @Query("SELECT * FROM school WHERE schoolName = :schoolName")
